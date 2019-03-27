@@ -1,0 +1,22 @@
+{
+  "name": "ls",
+  "version": "1.0.0",
+  "description": "用于学习 express 和 node 的项目，长期迭代加入新功能",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/teamonn/express-study-project.git"
+  },
+  "author": "rain.xu",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/teamonn/express-study-project/issues"
+  },
+  "homepage": "https://github.com/teamonn/express-study-project#readme",
+  "dependencies": {
+    "express": "^4.16.4"
+  }
+}

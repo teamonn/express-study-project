@@ -9,12 +9,19 @@ router.use(function timeLog(req, res, next) {
 
 // define the home page route
 router.get('/', function(req, res) {
-  res.send('Birds home page');
+  res.send('Books home page');
 });
 
-// define the about route
-router.get('/about', function(req, res) {
-  res.send('About birds');
+router.get('/add', function(req, res) {
+  res.send('Add an book that you like');
+});
+
+router.get('/delete', function(req, res) {
+  res.send('Delete an book that you don`t like');
+});
+
+router.get('/list', function(req, res) {
+  res.send('There is an books list');
 });
 
 module.exports = router;

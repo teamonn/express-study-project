@@ -1,6 +1,7 @@
 var express = require('express');
 var app = express();
-var birds = require('./routes/birds');
+var routes = require('./routes/index');
+var books = require('./routes/books');
 
 app.set('views', './views')
 app.set('view engine', 'pug');
@@ -15,13 +16,14 @@ var requestTime = function (req, res, next) {
 };
 app.use(requestTime);
 
-app.get('/', function (req, res) {
-  // res.send('Hello World!');
-  console.log(`req.requestTime:${req.requestTime}`)
-  res.render('index', { title: 'Hey', message: 'Hello there!'});
-});
+// app.get('/', function (req, res) {
+//   // res.send('Hello World!');
+//   console.log(`req.requestTime:${req.requestTime}`)
+//   res.render('index', { title: 'Hey', message: 'Hello there!'});
+// });
 
-app.use('/birds', birds);
+app.use('/', routes);
+app.use('/books', books);
 
 app.listen(3000, function () {
   console.log('Example app listening on port 3000!');

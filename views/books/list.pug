@@ -1,0 +1,21 @@
+extends ../layout
+
+block content
+  .container
+    .row
+      table.table.table-bordered.table-hover
+        thead
+          tr
+            th 编号
+            th 书名
+            th 简介
+            th 操作
+        tbody
+          each book in list
+            tr
+              td #{book.bookId}
+              td #{book.bookName}
+              td #{book.bookDesc}
+              td
+                a(target="_blank",href="/books/detail/#{book.bookId}") 查看
+                button.btn.btn-danger.del-book(type="button", data-id=book.bookId) 删除

@@ -2,6 +2,7 @@ var express = require('express');
 var app = express();
 var routes = require('./routes/index');
 var bodyParser = require('body-parser');
+var MongoClient = require('mongodb').MongoClient
 
 app.set('views', './views')
 app.set('view engine', 'pug');
@@ -20,6 +21,16 @@ app.use(bodyParser.json({limit: '1mb'}));  // body-parser 解析json格式数据
 app.use(bodyParser.urlencoded({            // 此项必须在 bodyParser.json 下面,为参数编码
   extended: true
 }));
+
+// 连接数据库
+MongoClient.connect('mongodb://localhost:27017', function (err, db) {
+  if (err) throw err
+  const mydb = db.db('books')
+  mydb.collection('booksList').find().toArray(function (err, result) {
+    if (err) throw err
+    console.log(result)
+  })
+})
 
 // app.get('/', function (req, res) {
 //   // res.send('Hello World!');

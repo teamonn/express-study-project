@@ -1,7 +1,6 @@
 var express = require('express');
 var app = express();
 var routes = require('./routes/index');
-// var books = require('./routes/books');
 var bodyParser = require('body-parser');
 
 app.set('views', './views')
@@ -17,30 +16,22 @@ var requestTime = function (req, res, next) {
 };
 app.use(requestTime);
 
+app.use(bodyParser.json({limit: '1mb'}));  // body-parser 解析json格式数据
+app.use(bodyParser.urlencoded({            // 此项必须在 bodyParser.json 下面,为参数编码
+  extended: true
+}));
+
 // app.get('/', function (req, res) {
 //   // res.send('Hello World!');
 //   console.log(`req.requestTime:${req.requestTime}`)
 //   res.render('index', { title: 'Hey', message: 'Hello there!'});
 // });
 
-app.use(bodyParser.json({limit: '1mb'}));  // body-parser 解析json格式数据
-app.use(bodyParser.urlencoded({            // 此项必须在 bodyParser.json 下面,为参数编码
-  extended: true
-}));
-
-
-app.use('/', routes);
-// app.use('/books', books);
-
-// app.get('/a', function(req, res) {
-//   res.redirect('/books/list');
-//   // res.send('There is an books list');
-//   // res.render('books/list', { list: booksList })s
-// });
-
 /**
  * 页面路由
  */
+
+app.use('/', routes);
 
 app.get('/books', function(req, res) {
   res.send('Books home page');
@@ -52,7 +43,6 @@ app.get('/books/add', function(req, res) {
 });
 
 app.get('/books/detail/:id', function(req, res) {
-  console.log(req.params.id)
   // console.log(req.query.id)
   var id = req.params.id
   booksList.forEach((i, idx) => {
@@ -61,6 +51,16 @@ app.get('/books/detail/:id', function(req, res) {
     }
   });
   res.render('books/detail', { title: 'Books detail page', book: booksList[id] })
+});
+
+app.get('/books/edit/:id', function(req, res) {
+  var id = req.params.id
+  booksList.forEach((i, idx) => {
+    if (i.bookId === id) {
+      id = idx
+    }
+  });
+  res.render('books/edit', { title: 'Books edit page', book: booksList[id] })
 });
 
 app.get('/books/list', function(req, res) {
@@ -73,13 +73,18 @@ app.get('/books/list', function(req, res) {
  */
 
 app.post('/books/new', function (req, res) {
-  console.log(req.body)
   booksList.push(req.body)
   res.redirect('/books/list');
-  // res.render('books/list', { list: booksList })
-  // res.send({
-  //   name: 'testName'
-  // });
+});
+
+app.post('/books/change', function (req, res) {
+  var id = req.body.bookId
+  booksList.forEach((i, idx) => {
+    if (i.bookId === id) {
+      booksList[idx] = req.body
+    }
+  });
+  res.redirect('/books/list');
 });
 
 app.post('/books/delete', function(req, res) {
@@ -90,8 +95,6 @@ app.post('/books/delete', function(req, res) {
     }
   });
   res.send('Delete an book that you don`t like');
-  // res.redirect('/books/list');
-  // res.render('books/list', { list: booksList })
 });
 
 var booksList = [{

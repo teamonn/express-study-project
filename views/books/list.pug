@@ -14,8 +14,9 @@ block content
           each book in list
             tr
               td #{book.bookId}
-              td #{book.bookName}
+              td 《#{book.bookName}》
               td #{book.bookDesc}
               td
-                a(target="_blank",href="/books/detail/#{book.bookId}") 查看
+                a.btn.btn-primary(target="_self",href="/books/detail/" + book.bookId) 查看
+                a.btn.btn-default(target="_self",href="/books/edit/" + book.bookId) 编辑
                 button.btn.btn-danger.del-book(type="button", data-id=book.bookId) 删除

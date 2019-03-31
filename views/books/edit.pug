@@ -1,0 +1,21 @@
+extends ../layout
+
+block content
+  .container
+    .row
+      form.form-horizontal(method="post", action="/books/change")
+        .form-group
+          label.col-sm-2.control-label(for="bookId") 编号
+          .col-sm-10
+            input#bookId.form-control(type="text", name="bookId", placeholder='请输入编号',value=book.bookId,readonly="readonly")
+        .form-group
+          label.col-sm-2.control-label(for="bookName") 书名
+          .col-sm-10
+            input#bookName.form-control(type="text",name="bookName", placeholder='请输入书名',value=book.bookName)
+        .form-group
+          label.col-sm-2.control-label(for="bookDesc") 简介
+          .col-sm-10
+            input#bookDesc.form-control(type="text",name="bookDesc", placeholder='请输入简介',value=book.bookDesc)
+        .form-group
+          .col-sm-offset-2.col-sm-6
+            button.btn.btn-default(type="submit") 修改

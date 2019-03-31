@@ -1,5 +1,5 @@
 {
-  "name": "ls",
+  "name": "express-study-project",
   "version": "1.0.0",
   "description": "用于学习 express 和 node 的项目，长期迭代加入新功能",
   "main": "index.js",

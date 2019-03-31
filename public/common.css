@@ -2,3 +2,7 @@ h1 {
   text-align: center;
   margin-bottom: 40px;
 }
+
+.table td > .btn {
+  margin-left: 8px;
+}

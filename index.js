@@ -76,6 +76,10 @@ app.get('/books/list', function (req, res) {
 	});
 });
 
+app.get('*', function (req, res) {
+  res.send('对不起，你要找的页面不存在！');
+});
+
 /**
  * 接口请求路由
  */
@@ -106,6 +110,13 @@ app.post('/books/delete', function(req, res) {
   });
 });
 
+// 自定义中间件，提示服务异常
+app.use(function (err, req, res, next) {
+  console.error(err.stack)
+  res.status(500).send('服务器开了小差呢，请稍后重试...')
+})
+
+// serves log
 app.listen(3000, function () {
   console.log('Example app listening on port 3000!');
 });

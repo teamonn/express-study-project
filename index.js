@@ -2,7 +2,9 @@ var express = require('express');
 var app = express();
 var routes = require('./routes/index');
 var bodyParser = require('body-parser');
-var MongoClient = require('mongodb').MongoClient
+// var MongoClient = require('mongodb').MongoClient
+var mongoose = require('mongoose');
+var Book = require('./models/books')
 
 app.set('views', './views')
 app.set('view engine', 'pug');
@@ -23,14 +25,16 @@ app.use(bodyParser.urlencoded({            // 此项必须在 bodyParser.json �
 }));
 
 // 连接数据库
-MongoClient.connect('mongodb://localhost:27017', function (err, db) {
-  if (err) throw err
-  const mydb = db.db('books')
-  mydb.collection('booksList').find().toArray(function (err, result) {
-    if (err) throw err
-    console.log(result)
-  })
-})
+mongoose.connect('mongodb://localhost:27017/books', { useNewUrlParser: true });
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function () {
+  console.log('MongoDB connection success!')
+});
+
+/**
+ * 页面路由
+ */
 
 // app.get('/', function (req, res) {
 //   // res.send('Hello World!');
@@ -38,45 +42,38 @@ MongoClient.connect('mongodb://localhost:27017', function (err, db) {
 //   res.render('index', { title: 'Hey', message: 'Hello there!'});
 // });
 
-/**
- * 页面路由
- */
-
 app.use('/', routes);
 
-app.get('/books', function(req, res) {
+app.get('/books', function (req, res) {
   res.send('Books home page');
 });
 
-app.get('/books/add', function(req, res) {
-  // res.send('Add an book that you like');
-  res.render('books/add', { title: 'Books add page'})
+app.get('/books/add', function (req, res) {
+  res.render('books/add', { title: 'Books add page' })
 });
 
-app.get('/books/detail/:id', function(req, res) {
+app.get('/books/detail/:id', function (req, res) {
   // console.log(req.query.id)
   var id = req.params.id
-  booksList.forEach((i, idx) => {
-    if (i.bookId === id) {
-      id = idx
-    }
-  });
-  res.render('books/detail', { title: 'Books detail page', book: booksList[id] })
+  Book.findById(id, function (err, book) {
+    res.render('books/detail', { title: 'Books detail page', book })
+  })
 });
 
-app.get('/books/edit/:id', function(req, res) {
+app.get('/books/edit/:id', function (req, res) {
   var id = req.params.id
-  booksList.forEach((i, idx) => {
-    if (i.bookId === id) {
-      id = idx
-    }
-  });
-  res.render('books/edit', { title: 'Books edit page', book: booksList[id] })
+  Book.findById(id, function (err, book) {
+    res.render('books/edit', { title: 'Books edit page', book })
+  })
 });
 
-app.get('/books/list', function(req, res) {
-  // res.send('There is an books list');
-  res.render('books/list', { title: 'There is an books list', list: booksList })
+app.get('/books/list', function (req, res) {
+  Book.fetch(function (err, list) {
+		if (err) {
+			console.log(err);
+    }
+    res.render('books/list', { title: 'There is books list', list })
+	});
 });
 
 /**
@@ -84,35 +81,30 @@ app.get('/books/list', function(req, res) {
  */
 
 app.post('/books/new', function (req, res) {
-  booksList.push(req.body)
-  res.redirect('/books/list');
+  var book = new Book(req.body);
+  book.save(function (err) {
+    if (err) return handleError(err);
+    res.redirect('/books/list');
+  })
 });
 
 app.post('/books/change', function (req, res) {
-  var id = req.body.bookId
-  booksList.forEach((i, idx) => {
-    if (i.bookId === id) {
-      booksList[idx] = req.body
+  Book.findOneAndUpdate({ bookId: req.body.bookId }, req.body, function (err, book) {
+    if (err) {
+      console.log('err:', err);
+      return;
     }
-  });
-  res.redirect('/books/list');
+    res.redirect('/books/list');
+  })
 });
 
 app.post('/books/delete', function(req, res) {
   var id = req.body.bookId
-  booksList.forEach((i, idx) => {
-    if (i.bookId === id) {
-      booksList.splice(idx, 1)
-    }
+  Book.remove({ bookId: id }, function (err) {
+    if (err) return handleError(err);
+    res.send('removed!');
   });
-  res.send('Delete an book that you don`t like');
 });
-
-var booksList = [{
-  bookId: '0',
-  bookName: '二十四史',
-  bookDesc: '中国各朝代编年体史书，极具史料研究和文学价值'
-}];
 
 app.listen(3000, function () {
   console.log('Example app listening on port 3000!');
